@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>tanks.html</title>
+    <script type="text/javascript"
+            src = "simpleGame.js"></script>
+    <script type="text/javascript">
+    
+    var game;
+    var cannon;
+    var tankRed; 
+    var background;
+    var castle;
+    
+    function Bullet(owner){
+        //owner is the tank owning this bullet
+        
+        tBullet = new Sprite(game, "cannonBall.png", 50, 50);
+        
+        tBullet.owner = owner;
+        tBullet.hide();
+        tBullet.setBoundAction(DIE);
+        tBullet.fire = function(){
+            //begin at center of my tank
+            //pointing in tank turret's direction
+            this.setPosition(this.owner.x, this.owner.y);
+            this.setMoveAngle(this.owner.turret.getImgAngle()-15);
+            this.setSpeed(20);
+            this.show();
+        } // end fire
+        
+        tBullet.checkGravity = function(){
+            this.addVector(180, 1);
+        } // end checkGravity
+        
+        return tBullet;
+    } // end bullet
+    
+    function UserTank(){
+        tTank = new Sprite(game, "cannonBase.png", 100, 100);
+        tTank.setSpeed(0);
+        tTank.setPosition(35, 300);
+        
+        tTank.turret = new Sprite(game, "cannonTube.png", 100, 100);
+        tTank.bullet = new Bullet(tTank);
+        
+        tTank.checkKeys = function(){            
+            //always move turret with me.
+            this.turret.setPosition(this.x, this.y);
+            
+            //rotate turret
+            
+            if (keysDown[K_W]){
+                this.turret.changeImgAngleBy(-5);
+                if (this.turret.getImgAngle() < 0){
+                    this.turret.setImgAngle(0);
+                } // end if
+            }
+            
+            if (keysDown[K_S]){
+                this.turret.changeImgAngleBy(5);
+                if (this.turret.getImgAngle() > 90){
+                    this.turret.setImgAngle(90);
+                }
+            }
+            
+            if (keysDown[K_SPACE]){
+                this.bullet.fire();
+            }
+            
+            this.turret.update();
+            this.bullet.checkGravity();
+            this.bullet.update();
+            
+        } // end checkKeys
+                
+        return tTank;
+    } // end tank
+    function reset1(){
+        var max = 500;
+        var min = 300;
+        armmy1.setPosition(780,Math.floor(Math.random() * (+max - +min)) + +min);
+
+    }
+    function reset2(){
+        var max = 500;
+        var min = 300;
+        armmy2.setPosition(780,Math.floor(Math.random() * (+max - +min)) + +min);
+
+    }
+    function reset3(){
+        var max = 500;
+        var min = 300;
+        armmy3.setPosition(780,Math.floor(Math.random() * (+max - +min)) + +min);
+
+    }
+
+    function checkHit(){
+        if (cannon.bullet.collidesWith(armmy1)){
+            cannon.bullet.hide();
+            reset1();
+        }
+        if (cannon.bullet.collidesWith(armmy2)){
+            cannon.bullet.hide();
+            reset2();
+        }
+        if (cannon.bullet.collidesWith(armmy3)){
+            cannon.bullet.hide();
+            reset3();
+        } // end if
+        if (armmy1.x < 100){
+            reset1();
+        }if (armmy2.x < 100){
+            reset2();
+        }if (armmy3.x < 100){
+            reset3();
+        }
+    } // end checkHit
+    
+    function init(){
+        game = new Scene();
+        game.setSize(800, 600);
+        cannon = new UserTank();
+        // tankRed = new DroneTank();
+        
+        background = new Sprite(game, "MAP.png", 800, 600);
+        castle = new Sprite(game, "castle.png", 200, 550);
+        armmy1 = new Sprite(game,"samurai2.png",128,192);
+        armmy1.loadAnimation(128, 193, 32, 48);
+        armmy1.generateAnimationCycles();
+        armmy1.renameCycles(new Array("down", "left", "right", "up"));
+        armmy1.setPosition(780,500);
+        armmy1.setCurrentCycle("left");
+        armmy1.setSpeed(3)
+        armmy1.changeMoveAngleBy(180)
+
+        armmy2 = new Sprite(game,"samurai2.png",128,192);
+        armmy2.loadAnimation(128, 193, 32, 48);
+        armmy2.generateAnimationCycles();
+        armmy2.renameCycles(new Array("down", "left", "right", "up"));
+        armmy2.setPosition(780,500);
+        armmy2.setCurrentCycle("left");
+        armmy2.setSpeed(3)
+        armmy2.changeMoveAngleBy(180)
+
+        armmy3 = new Sprite(game,"samurai2.png",128,192);
+        armmy3.loadAnimation(128, 193, 32, 48);
+        armmy3.generateAnimationCycles();
+        armmy3.renameCycles(new Array("down", "left", "right", "up"));
+        armmy3.setPosition(780,500);
+        armmy3.setCurrentCycle("left");
+        armmy3.setSpeed(3)
+        armmy3.changeMoveAngleBy(180)
+
+        background.setSpeed(0);
+        background.setPosition(400, 300);
+        castle.setSpeed(0);
+        castle.setPosition(0, 325);
+        game.start();
+    } // end init
+    
+    function update(){
+      game.clear();
+      
+      background.update();
+      castle.update();
+      armmy1.update();
+      armmy2.update();
+      armmy3.update();
+      cannon.checkKeys();
+    //   tankRed.moveRandom();
+      
+      checkHit();
+      
+      cannon.update();
+    //   tankRed.update();
+    } // end update
+    </script>
+</head>
+<body onload = "init()">
+    <div>W = หันปากกระบอกปืนขึ้น</div>
+    <div>S = หันปากกระบอกปืนลง</div>
+    <div>SPACE = ยิง</div>
+</body>
+</html>
